@@ -23,25 +23,36 @@ describe 'Atlassian JIRA instance' do
     subject { page }
 
     context 'when visiting root page' do
-      it { expect(current_path).to match '/secure/SetupDatabase!default.jspa' }
+      it { expect(current_path).to match '/secure/SetupWelcome!default.jspa' }
       it { is_expected.to have_title 'JIRA - JIRA Setup' }
-      it { is_expected.to have_css 'form#jira-setupwizard' }
-      it { is_expected.to have_selector :radio_button, 'jira-setupwizard-database-internal' }
+      it { is_expected.to have_content 'Welcome To Your JIRA Setup' }
+      it { is_expected.to have_content 'I\'ll set it up myself' }
     end
 
-    context 'when processing application properties setup' do
+    context 'when processing welcome setup' do
+      before :all do
+        within 'form#jira-setupwizard' do
+          find(:css, 'div[data-choice-value=classic]').trigger('click')
+          click_button 'Next'
+        end
+      end
+
+      it { expect(current_path).to match '/secure/SetupDatabase!default.jspa' }
+      it { is_expected.to have_content 'Set Up Database' }
+      it { is_expected.to have_content 'Built In (for evaluation or demonstration)' }
+    end
+
+    context 'when processing database setup' do
       # before :all do
-      #   within '#jira-setupwizard' do
-      #     fill_in 'title', with: 'JIRA Test instance'
-      #     choose 'jira-setupwizard-mode-public'
+      #   within 'form#jira-setupwizard' do
+      #     choose 'jira-setupwizard-database-internal'
       #     click_button 'Next'
       #   end
       # end
 
-      # it { expect(current_path).to match '/secure/SetupProductBundle!default.jspa' }
-      # it { is_expected.to have_title 'JIRA Test instance - JIRA Setup' }
-      # it { is_expected.to have_content 'Customize Your Installation' }
-      # it { is_expected.to have_content 'Project tracking' }
+      # it { expect(current_path).to match '/secure/SetupApplicationProperties!default.jspa' }
+      # it { is_expected.to have_title 'Your Company JIRA - JIRA Setup' }
+      # it { is_expected.to have_content 'Set Up Application Properties' }
     end
 
     context 'when processing product bundle setup' do
